@@ -10,6 +10,7 @@ resource "aws_instance" "front" {
   ]
 
   tags {
+    Name    = "front"
     Project = "${var.project}"
   }
 }
@@ -23,6 +24,20 @@ resource "aws_security_group" "front" {
     to_port         = 22
     protocol        = "tcp"
     security_groups = ["${aws_security_group.bastion.id}"]
+  }
+
+  ingress {
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  ingress {
+    from_port   = 443
+    to_port     = 443
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
   }
 
   tags {

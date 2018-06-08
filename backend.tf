@@ -10,6 +10,7 @@ resource "aws_instance" "back" {
   ]
 
   tags {
+    Name    = "back"
     Project = "${var.project}"
   }
 }
