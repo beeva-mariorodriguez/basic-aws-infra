@@ -3,6 +3,7 @@ resource "aws_instance" "back" {
   instance_type = "t2.micro"
   subnet_id     = "${aws_subnet.private.id}"
   key_name      = "${var.keyname}"
+  depends_on    = ["aws_instance.bastion"]
 
   vpc_security_group_ids = [
     "${aws_security_group.allow_outbound.id}",
