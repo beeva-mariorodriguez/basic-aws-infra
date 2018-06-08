@@ -13,6 +13,24 @@ resource "aws_instance" "back" {
     Name    = "back"
     Project = "${var.project}"
   }
+
+  provisioner "file" {
+    source      = "scripts/setup-vm.sh"
+    destination = "/tmp/setup-vm.sh"
+  }
+
+  provisioner "remote-exec" {
+    inline = [
+      "chmod +x /tmp/setup-vm.sh",
+      "/tmp/setup-vm.sh",
+    ]
+  }
+
+  connection {
+    type         = "ssh"
+    user         = "core"
+    bastion_host = "${aws_instance.bastion.public_ip}"
+  }
 }
 
 resource "aws_security_group" "back" {
