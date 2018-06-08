@@ -2,7 +2,7 @@ resource "aws_instance" "back" {
   ami           = "${data.aws_ami.coreos.image_id}"
   instance_type = "t2.micro"
   subnet_id     = "${aws_subnet.private.id}"
-  key_name      = "${var.keyname}"
+  key_name      = "${var.project}-bastion"
   depends_on    = ["aws_instance.bastion"]
 
   vpc_security_group_ids = [
@@ -23,7 +23,7 @@ resource "aws_instance" "back" {
   provisioner "remote-exec" {
     inline = [
       "chmod +x /tmp/setup-vm.sh",
-      "/tmp/setup-vm.sh",
+      "/tmp/setup-vm.sh backend",
     ]
   }
 
@@ -31,6 +31,8 @@ resource "aws_instance" "back" {
     type         = "ssh"
     user         = "core"
     bastion_host = "${aws_instance.bastion.public_ip}"
+    bastion_user = "core"
+    timeout      = "2m"
   }
 }
 

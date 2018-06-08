@@ -15,6 +15,16 @@ resource "aws_instance" "bastion" {
   }
 
   provisioner "file" {
+    source      = "secrets/ssh/id_rsa.pub"
+    destination = "/tmp/id_rsa.pub"
+  }
+
+  provisioner "file" {
+    source      = "secrets/ssh/id_rsa"
+    destination = "/tmp/id_rsa"
+  }
+
+  provisioner "file" {
     source      = "scripts/setup-vm.sh"
     destination = "/tmp/setup-vm.sh"
   }
@@ -22,7 +32,7 @@ resource "aws_instance" "bastion" {
   provisioner "remote-exec" {
     inline = [
       "chmod +x /tmp/setup-vm.sh",
-      "/tmp/setup-vm.sh",
+      "/tmp/setup-vm.sh bastion",
     ]
   }
 
@@ -46,4 +56,9 @@ resource "aws_security_group" "bastion" {
   tags {
     Project = "${var.project}"
   }
+}
+
+resource "aws_key_pair" "bastion" {
+  key_name   = "${var.project}-bastion"
+  public_key = "${chomp(file("secrets/ssh/id_rsa.pub"))}"
 }
