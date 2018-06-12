@@ -2,7 +2,7 @@ resource "aws_instance" "bastion" {
   ami           = "${data.aws_ami.coreos.image_id}"
   instance_type = "t2.micro"
   subnet_id     = "${aws_subnet.public.id}"
-  key_name      = "${var.keyname}"
+  key_name      = "${var.project}-bastion"
 
   vpc_security_group_ids = [
     "${aws_security_group.allow_outbound.id}",
@@ -37,8 +37,9 @@ resource "aws_instance" "bastion" {
   }
 
   connection {
-    type = "ssh"
-    user = "core"
+    type        = "ssh"
+    user        = "core"
+    private_key = "${chomp(file("secrets/ssh/id_rsa"))}"
   }
 }
 
@@ -47,10 +48,12 @@ resource "aws_security_group" "bastion" {
   vpc_id = "${aws_vpc.vpc.id}"
 
   ingress {
-    from_port   = 22
-    to_port     = 22
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
+    from_port = 22
+    to_port   = 22
+    protocol  = "tcp"
+
+    #    cidr_blocks = ["0.0.0.0/0"]
+    cidr_blocks = ["${var.my_ip}/32"]
   }
 
   tags {

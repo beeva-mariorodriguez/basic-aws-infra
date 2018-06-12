@@ -7,9 +7,7 @@ function setup_coreos {
 
 function setup_bastion {
     mkdir -p "${HOME}/.ssh"
-    printf 'Host *\n  StrictHostKeyChecking no\n' > "${HOME}/.ssh/config"
-    mv /tmp/id_rsa "${HOME}/.ssh/"
-    mv /tmp/id_rsa.pub "${HOME}/.ssh/"
+    mv /tmp/id_rsa "${HOME}/.ssh/id_rsa"
     chmod 700 .ssh
     chmod 600 .ssh/id_rsa
 }

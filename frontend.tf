@@ -33,6 +33,13 @@ resource "aws_instance" "front" {
     bastion_host = "${aws_instance.bastion.public_ip}"
     bastion_user = "core"
     timeout      = "2m"
+    host         = "${self.private_ip}"
+
+    # both keys must be the same:
+    #   https://github.com/hashicorp/terraform/issues/6263
+
+    private_key         = "${chomp(file("secrets/ssh/id_rsa"))}"
+    bastion_private_key = "${chomp(file("secrets/ssh/id_rsa"))}"
   }
 }
 
@@ -41,12 +48,10 @@ resource "aws_security_group" "front" {
   vpc_id = "${aws_vpc.vpc.id}"
 
   ingress {
-    from_port = 22
-    to_port   = 22
-    protocol  = "tcp"
-
-    # security_groups = ["${aws_security_group.bastion.id}"]
-    cidr_blocks = ["0.0.0.0/0"]
+    from_port       = 22
+    to_port         = 22
+    protocol        = "tcp"
+    security_groups = ["${aws_security_group.bastion.id}"]
   }
 
   ingress {

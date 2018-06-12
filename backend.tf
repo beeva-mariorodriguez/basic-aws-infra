@@ -32,7 +32,14 @@ resource "aws_instance" "back" {
     user         = "core"
     bastion_host = "${aws_instance.bastion.public_ip}"
     bastion_user = "core"
-    timeout      = "2m"
+    agent        = false
+    host         = "${self.private_ip}"
+
+    # both keys must be the same:
+    #   https://github.com/hashicorp/terraform/issues/6263
+
+    private_key         = "${chomp(file("secrets/ssh/id_rsa"))}"
+    bastion_private_key = "${chomp(file("secrets/ssh/id_rsa"))}"
   }
 }
 

@@ -1,8 +1,9 @@
 # variables
-variable "region" {}
 
+variable "region" {}
 variable "keyname" {}
 variable "project" {}
+variable "my_ip" {}
 
 # provider
 provider "aws" {
